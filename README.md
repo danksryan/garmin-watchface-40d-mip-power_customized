@@ -1,3 +1,13 @@
+# Custom Updates
+Just a personal fork to start playing with watch faces. ONLY tested for Enduro 3, may work for others but I havent tried...
+
+Primary changes from the base version are:
+* replaced HR with Body Battery 
+* added days of battery remaining
+* reduced frequency of heart rate polling
+
+Original readme is below.
+
 ![](docs/cover.png?raw=true "Title")
 
 # 40D MIP Power
