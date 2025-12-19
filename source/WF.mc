@@ -5,6 +5,7 @@ import Toybox.System;
 import Toybox.Lang;
 import Toybox.Time;
 import Toybox.Activity;
+import Toybox.SensorHistory;
 
 class WF extends WatchUi.WatchFace {
   // state variables
@@ -12,13 +13,16 @@ class WF extends WatchUi.WatchFace {
   hidden var lastMin as Number = -1; // last time min updated  
   hidden var inactiveMin as Number = 0; // how many minutes we are inactive
   hidden var powerSavingMode as Boolean = false; // power saving mode when watch is inactive for some time
+  hidden var lastBodyBattTime as Toybox.Time.Moment = Toybox.Time.now();
 
   // data fields
   hidden var dateToDraw as String = "";
   hidden var timeToDraw as String = "";  
   hidden var battery as Number = 0;
+  hidden var batteryDays as Number = 0;
   hidden var heartRateZone as Number = 0;
   hidden var heartRate as Number = 0;
+  hidden var bodyBatt as Number = 0;
 
   hidden var iconFont as WatchUi.FontResource;
 
@@ -33,6 +37,7 @@ class WF extends WatchUi.WatchFace {
   hidden var s_autoSwitchTheme as Boolean = false;
   hidden var s_showSeconds as Boolean = false;
   hidden var s_updateHRZone as Number = 0;
+  hidden var s_updateBodyBatt as Number = 0;
   hidden var s_powerSavingMin as Number = 0;
   hidden var s_heartRateAlert as Boolean = false;
   hidden var s_stressAlertLevel as Number = 0;
@@ -88,6 +93,7 @@ class WF extends WatchUi.WatchFace {
     iconFont = WatchUi.loadResource(Rez.Fonts.IconsFont) as WatchUi.FontResource;
 
     battery = System.getSystemStats().battery.toNumber();
+    updateBodyBatt(Time.Gregorian.info(Time.now(), Time.FORMAT_MEDIUM),true);
     log("WF::initialize() - battery " + battery + "%");
   }
 
@@ -121,6 +127,10 @@ class WF extends WatchUi.WatchFace {
   // Update the view
   function onUpdate(dc as Graphics.Dc) as Void{
     var now = Time.Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
+
+    if (!s_showSeconds && isWatchActive && now.min.equals(lastMin)) {
+      return;
+    }
 
     if (isWatchActive && (inactiveMin>0)) {
       if (powerSavingMode) {
@@ -168,7 +178,8 @@ class WF extends WatchUi.WatchFace {
     }
 
     // battery
-    dc.drawText(237, 68, Graphics.FONT_TINY, battery.format("%02d") + "%", Graphics.TEXT_JUSTIFY_RIGHT);
+    dc.drawText(200, 45, Graphics.FONT_TINY, batteryDays.format("%02d") + "d", Graphics.TEXT_JUSTIFY_LEFT);
+    dc.drawText(200, 68, Graphics.FONT_TINY, battery.format("%02d") + "%", Graphics.TEXT_JUSTIFY_LEFT);
     // Date
     dc.drawText(48, 68, Graphics.FONT_TINY, dateToDraw, Graphics.TEXT_JUSTIFY_LEFT);    
     // second
@@ -177,13 +188,13 @@ class WF extends WatchUi.WatchFace {
     }    
 
     // heartRate
-    if (heartRate > 0) {
-      dc.drawText(160, 225, Graphics.FONT_LARGE, heartRate.format("%02d"), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+    if (bodyBatt != null) {
+      dc.drawText(160, 225, Graphics.FONT_LARGE, bodyBatt.format("%3d"), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
       
       if (heartRateZone > 0) {
         dc.setColor(heartRateColor(heartRateZone-1), Graphics.COLOR_TRANSPARENT);
       }
-      dc.drawText(140, 225, iconFont, "0", Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
+      dc.drawText(140, 223, iconFont, "0", Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
     }
     
     // alert ring
@@ -278,6 +289,22 @@ class WF extends WatchUi.WatchFace {
     }
   }
 
+  function updateBodyBatt (now as Gregorian.Info, firstTime as Boolean) as Void {
+    if (firstTime || (Time.now().subtract(lastBodyBattTime).value() < (s_updateBodyBatt*60.0))) {
+      return;
+    }
+    if ((Toybox has :SensorHistory) && (Toybox.SensorHistory has :getBodyBatteryHistory)) {
+        var BB= Toybox.SensorHistory.getBodyBatteryHistory({:period=>1}).next();
+        if (BB != null) {BB = BB.data;}
+        if (BB != null) {
+            if ((BB > 0) && (BB < 101)){
+              bodyBatt = BB.toNumber();
+              }   
+          }
+      }
+    lastBodyBattTime = Time.now();
+  }
+
   // this function is called once every 1min
   function onUpdate_1Min(now as Gregorian.Info, powerSavingMode as Boolean) as Void {
     var is12Hour = !System.getDeviceSettings().is24Hour;
@@ -290,6 +317,7 @@ class WF extends WatchUi.WatchFace {
       log("Battery " + battery + "% to " + b + "%");
     }
     battery = b;
+    batteryDays = System.getSystemStats().batteryInDays.toNumber();
 
     if (now.min == 0) {
       checkPerfCounters();
@@ -297,6 +325,7 @@ class WF extends WatchUi.WatchFace {
       
     if (!powerSavingMode) {
       updateHearRate();
+      updateBodyBatt(now,false);
 
       checkAlerts();
     }
@@ -366,6 +395,7 @@ class WF extends WatchUi.WatchFace {
     
     s_showSeconds = Properties.getValue("showSeconds") as Boolean;
     s_updateHRZone = Properties.getValue("updateHRZone") as Number;
+    s_updateBodyBatt = Properties.getValue("updateBodyBatt") as Number;
 
     s_powerSavingMin = Properties.getValue("powerSavingMin") as Number;
 

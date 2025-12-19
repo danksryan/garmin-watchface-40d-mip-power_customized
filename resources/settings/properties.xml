@@ -1,11 +1,13 @@
 <!-- See settings.xml for explaination of the properties -->
 <properties>  
-  <property id="theme" type="number">1</property>
+  <property id="theme" type="number">0</property>
   <property id="autoSwitchTheme" type="boolean">true</property>
   <property id="showSeconds" type="boolean">false</property>
   <property id="updateHRZone" type="number">2</property>
+  <property id="updateBodyBatt" type="number">15</property>
 
-  <property id="powerSavingMin" type="number">10</property>
+
+  <property id="powerSavingMin" type="number">5</property>
 
   <property id="heartRateAlert" type="boolean">true</property>
   <property id="stressAlertLevel" type="number">100</property>
