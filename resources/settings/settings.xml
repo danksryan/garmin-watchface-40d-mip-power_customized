@@ -24,6 +24,18 @@
     </settingConfig>
   </setting>
 
+    <setting propertyKey="@Properties.updateBodyBatt" title="Update Body Batter every X minutes">
+    <settingConfig type="list">
+      <listEntry value="1">1</listEntry>
+      <listEntry value="5">5</listEntry>
+      <listEntry value="10">10</listEntry>
+      <listEntry value="15">15</listEntry>
+      <listEntry value="30">30</listEntry>
+      <listEntry value="60">60</listEntry>
+      <listEntry value="99999">Never</listEntry>
+    </settingConfig>
+  </setting>
+
   <setting propertyKey="@Properties.powerSavingMin" title="Enter power saving mode when inactive for more than X minutes">
     <settingConfig type="list">
       <listEntry value="5">5</listEntry>
