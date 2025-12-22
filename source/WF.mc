@@ -128,10 +128,6 @@ class WF extends WatchUi.WatchFace {
   function onUpdate(dc as Graphics.Dc) as Void{
     var now = Time.Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
 
-    if (!s_showSeconds && isWatchActive && now.min.equals(lastMin)) {
-      return;
-    }
-
     if (isWatchActive && (inactiveMin>0)) {
       if (powerSavingMode) {
         powerSavingMode = false;
@@ -155,10 +151,10 @@ class WF extends WatchUi.WatchFace {
       
       pc_update_1min++;
       onUpdate_1Min(now, powerSavingMode);
-    }else {
-      pc_update_immediate++;
-      onUpdate_Immediate();
-    }
+    }//else {
+      //pc_update_immediate++;
+      //onUpdate_Immediate();
+    //}
     
     drawWF(dc, now);
   }

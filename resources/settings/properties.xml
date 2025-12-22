@@ -11,7 +11,7 @@
 
   <property id="heartRateAlert" type="boolean">true</property>
   <property id="stressAlertLevel" type="number">100</property>
-  <property id="moveAlert" type="boolean">true</property>
+  <property id="moveAlert" type="boolean">false</property>
 </properties>
 
 
