@@ -155,7 +155,6 @@ class WF extends WatchUi.WatchFace {
       //pc_update_immediate++;
       //onUpdate_Immediate();
     //}
-    
     drawWF(dc, now);
   }
 
@@ -174,10 +173,10 @@ class WF extends WatchUi.WatchFace {
     }
 
     // battery
-    dc.drawText(200, 45, Graphics.FONT_TINY, batteryDays.format("%02d") + "d", Graphics.TEXT_JUSTIFY_LEFT);
-    dc.drawText(200, 68, Graphics.FONT_TINY, battery.format("%02d") + "%", Graphics.TEXT_JUSTIFY_LEFT);
+    dc.drawText(183, 49, Graphics.FONT_TINY, batteryDays.format("%02d") + "d", Graphics.TEXT_JUSTIFY_LEFT);
+    dc.drawText(183, 72, Graphics.FONT_TINY, battery.format("%02d") + "%", Graphics.TEXT_JUSTIFY_LEFT);
     // Date
-    dc.drawText(48, 68, Graphics.FONT_TINY, dateToDraw, Graphics.TEXT_JUSTIFY_LEFT);    
+    dc.drawText(48, 72, Graphics.FONT_TINY, dateToDraw, Graphics.TEXT_JUSTIFY_LEFT);    
     // second
     if (s_showSeconds && isWatchActive) {
       dc.drawText(140, 186, Graphics.FONT_XTINY, now.sec, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
@@ -192,7 +191,6 @@ class WF extends WatchUi.WatchFace {
       }
       dc.drawText(140, 223, iconFont, "0", Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
     }
-    
     // alert ring
     if (activeAlert != :alertNone) {
       // rl.draw(dc);
@@ -286,7 +284,7 @@ class WF extends WatchUi.WatchFace {
   }
 
   function updateBodyBatt (now as Gregorian.Info, firstTime as Boolean) as Void {
-    if (firstTime || (Time.now().subtract(lastBodyBattTime).value() < (s_updateBodyBatt*60.0))) {
+    if (!firstTime && (Time.now().subtract(lastBodyBattTime).value() < (s_updateBodyBatt*60.0))) {
       return;
     }
     if ((Toybox has :SensorHistory) && (Toybox.SensorHistory has :getBodyBatteryHistory)) {
