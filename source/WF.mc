@@ -288,10 +288,10 @@ class WF extends WatchUi.WatchFace {
       return;
     }
     if ((Toybox has :SensorHistory) && (Toybox.SensorHistory has :getBodyBatteryHistory)) {
-        var BB= Toybox.SensorHistory.getBodyBatteryHistory({:period=>1}).next();
+        var BB= Toybox.SensorHistory.getBodyBatteryHistory({:period => 1}).next();
         if (BB != null) {BB = BB.data;}
         if (BB != null) {
-            if ((BB > 0) && (BB < 101)){
+            if ((BB > 2) && (BB < 101)){
               bodyBatt = BB.toNumber();
               }   
           }
